@@ -13,8 +13,5 @@ talisman = Talisman(
     force_https=False              # Disabled for local development/testing
 )
 
-# Configuration settings (if any)
+# Configuration settings
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'a-very-secret-key')
-
-# Import routes here to avoid circular imports later
-# from service import routes
