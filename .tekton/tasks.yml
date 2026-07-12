@@ -1,7 +1,22 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: pipeline-test-and-cleanup
+  name: cleanup-task
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: pipeline-cleanup
+      image: alpine:latest
+      workingDir: $(workspaces.source.path)
+      script: |
+        echo "Cleaning build workspace environment..."
+        rm -rf *
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: test-task
 spec:
   workspaces:
     - name: source
@@ -12,17 +27,9 @@ spec:
       script: |
         pip install flake8
         flake8 . --count --exit-zero
-
     - name: run-nose-tests
       image: python:3.10-slim
       workingDir: $(workspaces.source.path)
       script: |
         pip install -r requirements.txt
         nosetests
-
-    - name: pipeline-cleanup
-      image: alpine:latest
-      workingDir: $(workspaces.source.path)
-      script: |
-        echo "Cleaning build workspace environment..."
-        rm -rf *
